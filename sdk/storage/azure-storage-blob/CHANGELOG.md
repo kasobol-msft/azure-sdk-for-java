@@ -1,6 +1,6 @@
 # Release History
 
-## 12.7.0-beta.1 (Unreleased)
+## 12.8.0-beta.1 (Unreleased)
 - Added support for the 2019-12-12 service version.
 - Added support for blob tags. Added get/setTags method to Blob(Async)ClientBase. Added filterTags api to BlobServiceClient. Added ability to specify tags on all methods that create a blob. Tag count returned on getProperties/getBlob. Option to include returning tags on listing. 
 - Fixed a bug that caused auth failures when constructing a client to a secondary endpoint using token auth.
@@ -10,6 +10,10 @@
 - Added an overload to BlobClient.upload which returns a BlockBlobItem containing the properties returned by the service upon blob creation.
 - Fixed a bug that caused auth failures when constructing a client to a secondary endpoint using token auth.
 - Modified client constructors to throw on invalid urls early to prevent SAS tokens from being logged in Exceptions.
+
+## 12.7.0 (2020-06-12)
+- Moved BlobParallelUploadOptions into options package.
+- Added data source and data length to BlobParallelUploadOptions and removed them from the relevant method parameter lists
 
 ## 12.6.1 (2020-05-06)
 - Updated `azure-core` version to `1.5.0` to pickup fixes for percent encoding `UTF-8` and invalid leading bytes in a body string.
