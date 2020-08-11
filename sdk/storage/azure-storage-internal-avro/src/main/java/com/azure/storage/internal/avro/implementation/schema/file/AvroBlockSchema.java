@@ -94,17 +94,23 @@ public class AvroBlockSchema extends AvroCompositeSchema {
         objectSchema.pushToStack();
     }
 
+    public boolean hasNext() {
+        return this.blockCount != 0;
+    }
+
     /**
      * Object handler.
      *
      * @param schema The object.
      */
     private void onObject(Object schema) {
+        /* Decrement the block count. */
+        this.blockCount--;
+
         /* Call the object handler to store this object in the AvroParser. */
         this.onAvroObject.accept(schema);
 
-        /* Decrement the block count. */
-        this.blockCount--;
+
         /* If blockCount = 0, there are no more items in the block, read the sync marker, call validateSync */
         if (this.blockCount == 0) {
             AvroFixedSchema syncSchema = new AvroFixedSchema(

@@ -123,13 +123,23 @@ public class AvroParser {
 
         this.blockOffset = this.state.getSourceOffset();
         this.objectBlockIndex = 0;
-        AvroBlockSchema blockSchema = new AvroBlockSchema(
+        final AvroBlockSchema blockSchema = new AvroBlockSchema(
             this.objectType,
             o -> {
                 if (objectBlockIndex <= threshold) {
                     this.objectBlockIndex++;
                 } else {
-                    this.objects.add(new AvroObject(blockOffset, this.objectBlockIndex++, o));
+                    boolean hasNext = ((AvroBlockSchema) this.state.peekFromStack()).hasNext();
+                    long nextBlockOffset;
+                    long nextObjectBlockIndex;
+                    if (hasNext) {
+                        nextBlockOffset = this.blockOffset;
+                        nextObjectBlockIndex = this.objectBlockIndex + 1;
+                    } else {
+                        nextBlockOffset = this.state.getSourceOffset() + syncMarker.length;
+                        nextObjectBlockIndex = 0;
+                    }
+                    this.objects.add(new AvroObject(blockOffset, this.objectBlockIndex++, nextBlockOffset, nextObjectBlockIndex, o));
                 }
             }, /* Object result handler. */
             this.syncMarker,
