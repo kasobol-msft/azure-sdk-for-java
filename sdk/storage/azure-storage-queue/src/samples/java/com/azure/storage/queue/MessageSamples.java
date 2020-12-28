@@ -3,14 +3,43 @@
 
 package com.azure.storage.queue;
 
+import com.azure.storage.queue.models.PeekedMessageItem;
 import com.azure.storage.queue.models.QueueMessageItem;
+import reactor.core.publisher.Mono;
+
 import java.time.Duration;
+import java.util.Queue;
 
 import static com.azure.storage.queue.SampleHelper.generateRandomName;
 
 public class MessageSamples {
     private static final String ACCOUNT_NAME = System.getenv("AZURE_STORAGE_ACCOUNT_NAME");
     private static final String SAS_TOKEN = System.getenv("PRIMARY_SAS_TOKEN");
+
+    public static class MyInvalidMessageHandler implements InvalidQueueMessageHandler {
+        @Override
+        public Mono<Void> onInvalidMessage(QueueAsyncClient queueAsyncClient, Object message) {
+            if (message instanceof QueueMessageItem) {
+                QueueMessageItem queueMessageItem = (QueueMessageItem) message;
+                System.out.printf("Unable to decode message %s %s", queueMessageItem.getMessageId(), queueMessageItem.getMessageText());
+                return queueAsyncClient.deleteMessage(queueMessageItem.getMessageId(), queueMessageItem.getPopReceipt());
+            } else if (message instanceof PeekedMessageItem) {
+                PeekedMessageItem peekedMessageItem = (PeekedMessageItem) message;
+                System.out.printf("Unable to decode message %s %s", peekedMessageItem.getMessageId(), peekedMessageItem.getMessageText());
+            }
+            return Mono.empty();
+        }
+    }
+
+    public static void dupa() {
+        String queueUrl = "";
+        QueueClient queueClient = new QueueClientBuilder()
+            .endpoint(queueUrl)
+            .messageEncoding(QueueMessageEncoding.BASE64)
+            .invalidQueueMessageHandler(new MyInvalidMessageHandler())
+            .buildClient();
+        Iterable<QueueMessageItem> messages = queueClient.receiveMessages(20);
+    }
 
     /**
      * The main method illustrate the basic operations for enqueue and receive messages using sync client.

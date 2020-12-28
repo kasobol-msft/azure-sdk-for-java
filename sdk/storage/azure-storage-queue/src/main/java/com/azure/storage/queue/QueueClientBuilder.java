@@ -91,6 +91,9 @@ public final class QueueClientBuilder {
     private Configuration configuration;
     private QueueServiceVersion version;
 
+    private QueueMessageEncoding messageEncoding;
+    private InvalidQueueMessageHandler invalidQueueMessageHandler;
+
     /**
      * Creates a builder instance that is able to configure and construct {@link QueueClient QueueClients} and {@link
      * QueueAsyncClient QueueAsyncClients}.
@@ -370,6 +373,16 @@ public final class QueueClientBuilder {
      */
     public QueueClientBuilder serviceVersion(QueueServiceVersion version) {
         this.version = version;
+        return this;
+    }
+
+    public QueueClientBuilder messageEncoding(QueueMessageEncoding messageEncoding) {
+        this.messageEncoding = messageEncoding;
+        return this;
+    }
+
+    public QueueClientBuilder invalidQueueMessageHandler(InvalidQueueMessageHandler invalidQueueMessageHandler) {
+        this.invalidQueueMessageHandler = invalidQueueMessageHandler;
         return this;
     }
 }
